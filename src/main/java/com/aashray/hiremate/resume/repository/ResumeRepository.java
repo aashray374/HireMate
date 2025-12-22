@@ -14,5 +14,6 @@ public interface ResumeRepository extends JpaRepository<Resume,Long> {
 
     List<Resume> findAllByUser(User user, Pageable pageable);
     List<Resume> findAllByUserAndLabel(User user, ResumeLabel resumeLabel, Pageable pageable);
+    List<Resume> findAllByUserAndLabel(User user, ResumeLabel resumeLabel);
 
 }

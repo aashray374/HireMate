@@ -8,4 +8,6 @@ public interface UserService {
     User createNewUser(User entity);
 
     User loginUser(@NonNull @Email String email, @NonNull String password);
+
+    User getUserFromEmail(@NonNull @Email String email);
 }

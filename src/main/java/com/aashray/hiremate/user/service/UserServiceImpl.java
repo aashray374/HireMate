@@ -39,4 +39,13 @@ public class UserServiceImpl implements UserService{
         }
         throw new IncorrectPassword();
     }
+
+    @Override
+    public User getUserFromEmail(@NonNull String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if(user == null){
+            throw new UserNotFound(email);
+        }
+        return user;
+    }
 }
