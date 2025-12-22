@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.OffsetDateTime;
 
@@ -23,17 +22,19 @@ public class User {
     private Long id;
 
     @Email
-    @NonNull
-    @Column(unique = true)
+    @NotBlank
+    @Column(unique = true,nullable = false)
     private String email;
 
     private String password;
 
-    @NonNull
+    @NotBlank
+    @Column(nullable = false)
     @Size(min = 3,max = 50)
     private String firstName;
 
-    @NonNull
+    @NotBlank
+    @Column(nullable = false)
     @Size(min = 3,max = 50)
     private String lastName;
 
