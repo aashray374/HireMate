@@ -1,6 +1,7 @@
 package com.aashray.hiremate.exception;
 
 import com.aashray.hiremate.exception.response.ApiErrorResponse;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,19 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.UNAUTHORIZED.value(),
                 "Unauthorized",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+
+    @ExceptionHandler(JwtException.class)
+    ResponseEntity<ApiErrorResponse> handleJwtError(JwtException e,HttpServletRequest request){
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Jwt Error",
                 e.getMessage(),
                 request.getRequestURI()
         );
