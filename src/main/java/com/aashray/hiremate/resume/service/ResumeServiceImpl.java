@@ -1,12 +1,12 @@
 package com.aashray.hiremate.resume.service;
 
 import com.aashray.hiremate.exception.ResumeNotFound;
+import com.aashray.hiremate.exception.ResumeOfAnotherUser;
 import com.aashray.hiremate.resume.entity.Resume;
 import com.aashray.hiremate.resume.entity.ResumeLabel;
 import com.aashray.hiremate.resume.repository.ResumeRepository;
 import com.aashray.hiremate.resume.util.FileUploadUtil;
 import com.aashray.hiremate.user.entity.User;
-import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class ResumeServiceImpl implements ResumeService{
     }
 
     @Override
-    public Resume uploadResume(User user, @NonNull MultipartFile file, ResumeLabel label) throws IOException {
+    public Resume uploadResume(User user, MultipartFile file, ResumeLabel label) throws IOException {
         if (!Objects.equals(file.getContentType(), "application/pdf")) {
             throw new IllegalArgumentException("Only PDF files are allowed");
         }
@@ -42,7 +42,7 @@ public class ResumeServiceImpl implements ResumeService{
         fileUploadUtil.saveFile(file,subDir,fileName);
 
         Resume resume = Resume.builder()
-                .originalFileName(file.getName())
+                .originalFileName(file.getOriginalFilename())
                 .storedFileName(subDir+"/"+fileName)
                 .label(label)
                 .user(user)
