@@ -29,7 +29,7 @@ public class FileUploadUtil {
         }
     }
 
-    public String saveFile(MultipartFile file,String subDir,String fileName)throws IOException {
+    public void saveFile(MultipartFile file, String subDir, String fileName)throws IOException {
         Path destinationDir = this.rootLocation.resolve(subDir).normalize();
 
         if(!Files.exists(destinationDir)){
@@ -39,6 +39,11 @@ public class FileUploadUtil {
         Path destinationFile = destinationDir.resolve(fileName);
         Files.copy(file.getInputStream(),destinationFile, StandardCopyOption.REPLACE_EXISTING);
 
-        return destinationFile.toString();
+    }
+
+    public void deleteFile(String filePath) throws IOException {
+        if(filePath == null || filePath.isEmpty())  return;
+        Path path = this.rootLocation.resolve(filePath).normalize();
+        Files.deleteIfExists(path);
     }
 }

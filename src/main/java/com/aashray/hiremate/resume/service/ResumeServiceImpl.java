@@ -1,16 +1,19 @@
 package com.aashray.hiremate.resume.service;
 
+import com.aashray.hiremate.exception.ResumeNotFound;
 import com.aashray.hiremate.resume.entity.Resume;
 import com.aashray.hiremate.resume.entity.ResumeLabel;
 import com.aashray.hiremate.resume.repository.ResumeRepository;
 import com.aashray.hiremate.resume.util.FileUploadUtil;
 import com.aashray.hiremate.user.entity.User;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -24,7 +27,11 @@ public class ResumeServiceImpl implements ResumeService{
         this.resumeRepository = resumeRepository;
     }
 
-    public Resume uploadResume(User user, MultipartFile file, ResumeLabel label) throws IOException {
+    @Override
+    public Resume uploadResume(User user, @NonNull MultipartFile file, ResumeLabel label) throws IOException {
+        if (!Objects.equals(file.getContentType(), "application/pdf")) {
+            throw new IllegalArgumentException("Only PDF files are allowed");
+        }
         String subDir = String.format("user-%d/%s",
                 user.getId(),
                 label.name().toLowerCase()
@@ -52,6 +59,20 @@ public class ResumeServiceImpl implements ResumeService{
     @Override
     public Page<Resume> getAllResumeWithLabel(User user, ResumeLabel label, Pageable page) {
         return resumeRepository.findAllByUserAndLabel(user,label,page);
+    }
+
+    @Override
+    public void deleteResumeWithId(User user, Long id) throws IOException {
+        Resume resume = resumeRepository.findById(id).orElse(null);
+        if(resume == null){
+            throw new ResumeNotFound(id);
+        }
+        if(!Objects.equals(user.getId(), resume.getUser().getId())){
+            throw new ResumeOfAnotherUser(id);
+        }
+        fileUploadUtil.deleteFile(resume.getStoredFileName());
+        resumeRepository.deleteById(id);
+
     }
 
 }

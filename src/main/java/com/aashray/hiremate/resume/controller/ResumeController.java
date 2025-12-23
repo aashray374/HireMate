@@ -18,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
 import java.io.IOException;
 
 @RestController
@@ -60,5 +59,16 @@ public class ResumeController {
         User user = userService.getUserFromEmail(authentication.getName());
         Page<Resume> resumes = resumeService.getAllResumeWithLabel(user,label,page);
         return resumes.map(resumeMapper::createResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteResume(Authentication authentication,@PathVariable Long id){
+        try{
+            User user = userService.getUserFromEmail(authentication.getName());
+            resumeService.deleteResumeWithId(user,id);
+        }catch (IOException e){
+            throw new UnexpectedFileStorageError(e.getMessage());
+        }
     }
 }
