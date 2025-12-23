@@ -8,6 +8,7 @@ import com.aashray.hiremate.resume.mapper.ResumeMapper;
 import com.aashray.hiremate.resume.service.ResumeService;
 import com.aashray.hiremate.user.entity.User;
 import com.aashray.hiremate.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@Slf4j
 @RestController
 @RequestMapping("/resume")
 public class ResumeController {
@@ -36,38 +38,70 @@ public class ResumeController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResumeMetadata uploadResume(@RequestParam("file")MultipartFile file, @RequestParam("label")ResumeLabel label, Authentication authentication){
-        try{
-            String email = authentication.getName();
+    public ResumeMetadata uploadResume(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("label") ResumeLabel label,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+        log.info("Request received to upload resume for user: [{}] with label: [{}]", email, label);
+
+        try {
             User user = userService.getUserFromEmail(email);
-            Resume resume = resumeService.uploadResume(user,file,label);
+            Resume resume = resumeService.uploadResume(user, file, label);
+
+            log.info("Resume uploaded successfully. Resume ID: [{}], Filename: [{}]", resume.getId(), file.getOriginalFilename());
+
             return resumeMapper.createResponse(resume);
-        }catch (IOException e){
+        } catch (IOException e) {
+            log.error("Failed to store resume file for user: [{}]", email, e);
             throw new UnexpectedFileStorageError(e.getMessage());
         }
     }
 
     @GetMapping("/")
-    public Page<ResumeMetadata> getAllResume(Authentication authentication, @PageableDefault(direction = Sort.Direction.ASC,sort = "uploadedAt") Pageable page){
-        User user = userService.getUserFromEmail(authentication.getName());
-        Page<Resume> resumes = resumeService.getAllResume(user,page);
+    public Page<ResumeMetadata> getAllResume(
+            Authentication authentication,
+            @PageableDefault(direction = Sort.Direction.ASC, sort = "uploadedAt") Pageable page
+    ) {
+        String email = authentication.getName();
+        log.info("Fetching all resumes for user: [{}], Page: [{}]", email, page.getPageNumber());
+
+        User user = userService.getUserFromEmail(email);
+        Page<Resume> resumes = resumeService.getAllResume(user, page);
+
+        log.debug("Found {} resumes for user: [{}]", resumes.getTotalElements(), email);
+
         return resumes.map(resumeMapper::createResponse);
     }
 
     @GetMapping("/label/{label}")
-    public Page<ResumeMetadata> getAllResumeWithLabel(Authentication authentication, @PageableDefault(direction = Sort.Direction.ASC,sort = "uploadedAt") Pageable page, @PathVariable ResumeLabel label){
-        User user = userService.getUserFromEmail(authentication.getName());
-        Page<Resume> resumes = resumeService.getAllResumeWithLabel(user,label,page);
+    public Page<ResumeMetadata> getAllResumeWithLabel(
+            Authentication authentication,
+            @PageableDefault(direction = Sort.Direction.ASC, sort = "uploadedAt") Pageable page,
+            @PathVariable ResumeLabel label
+    ) {
+        String email = authentication.getName();
+        log.info("Fetching resumes with label: [{}] for user: [{}], Page: [{}]", label, email, page.getPageNumber());
+
+        User user = userService.getUserFromEmail(email);
+        Page<Resume> resumes = resumeService.getAllResumeWithLabel(user, label, page);
+
         return resumes.map(resumeMapper::createResponse);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteResume(Authentication authentication,@PathVariable Long id){
-        try{
-            User user = userService.getUserFromEmail(authentication.getName());
-            resumeService.deleteResumeWithId(user,id);
-        }catch (IOException e){
+    public void deleteResume(Authentication authentication, @PathVariable Long id) {
+        String email = authentication.getName();
+        log.info("Request received to delete resume ID: [{}] for user: [{}]", id, email);
+
+        try {
+            User user = userService.getUserFromEmail(email);
+            resumeService.deleteResumeWithId(user, id);
+            log.info("Resume ID: [{}] deleted successfully for user: [{}]", id, email);
+        } catch (IOException e) {
+            log.error("Failed to delete resume file for ID: [{}]", id, e);
             throw new UnexpectedFileStorageError(e.getMessage());
         }
     }
