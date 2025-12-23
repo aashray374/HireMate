@@ -8,6 +8,10 @@ import com.aashray.hiremate.resume.mapper.ResumeMapper;
 import com.aashray.hiremate.resume.service.ResumeService;
 import com.aashray.hiremate.user.entity.User;
 import com.aashray.hiremate.user.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -42,5 +46,19 @@ public class ResumeController {
         }catch (IOException e){
             throw new UnexpectedFileStorageError(e.getMessage());
         }
+    }
+
+    @GetMapping("/")
+    public Page<ResumeMetadata> getAllResume(Authentication authentication, @PageableDefault(direction = Sort.Direction.ASC,sort = "uploadedAt") Pageable page){
+        User user = userService.getUserFromEmail(authentication.getName());
+        Page<Resume> resumes = resumeService.getAllResume(user,page);
+        return resumes.map(resumeMapper::createResponse);
+    }
+
+    @GetMapping("/label/{label}")
+    public Page<ResumeMetadata> getAllResumeWithLabel(Authentication authentication, @PageableDefault(direction = Sort.Direction.ASC,sort = "uploadedAt") Pageable page, @PathVariable ResumeLabel label){
+        User user = userService.getUserFromEmail(authentication.getName());
+        Page<Resume> resumes = resumeService.getAllResumeWithLabel(user,label,page);
+        return resumes.map(resumeMapper::createResponse);
     }
 }
