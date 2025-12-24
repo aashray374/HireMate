@@ -7,11 +7,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CompanyRepository extends JpaRepository<Company,Long> {
     Page<Company> findAllByUserAndLocationIgnoreCase(User user, String location, Pageable pageable);
 
-    Company findByUserAndNameIgnoreCase(User user, String name);
+    Page<Company> findAllByUserAndNameIgnoreCase(User user, String name,Pageable pageable);
 
     Page<Company> findAllByUser(User user, Pageable pageable);
+
+    Optional<Company> findByWebsite(String website);
 }
