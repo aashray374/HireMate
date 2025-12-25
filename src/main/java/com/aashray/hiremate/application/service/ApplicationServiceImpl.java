@@ -27,7 +27,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Application createNewApplication(Application jobApplication) {
-        if(jobApplication.getCompany().getUser().getId().equals(jobApplication.getUser().getId()) && jobApplication.getResume().getUser().getId().equals(jobApplication.getResume().getId())){
+        if(jobApplication.getCompany().getUser().getId().equals(jobApplication.getUser().getId()) && jobApplication.getResume().getUser().getId().equals(jobApplication.getUser().getId())){
             Application application = jobRepository.findByCompanyAndUserAndRoleTitleAndStatusIn(
                     jobApplication.getCompany(),
                     jobApplication.getUser(),
@@ -36,7 +36,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             ).orElse(null);
 
             if(application == null){
-                jobRepository.save(jobApplication);
+                return jobRepository.save(jobApplication);
             }
             throw new ApplicationAlreadyExists();
         }
