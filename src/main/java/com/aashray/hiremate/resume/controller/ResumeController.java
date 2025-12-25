@@ -59,7 +59,7 @@ public class ResumeController {
         }
     }
 
-    @GetMapping("/")
+    @GetMapping
     public Page<ResumeMetadata> getAllResume(
             Authentication authentication,
             @PageableDefault(direction = Sort.Direction.ASC, sort = "uploadedAt") Pageable page
@@ -73,6 +73,12 @@ public class ResumeController {
         log.debug("Found {} resumes for user: [{}]", resumes.getTotalElements(), email);
 
         return resumes.map(resumeMapper::createResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResumeMetadata getResumeFromId(@PathVariable Long id,Authentication authentication){
+        User user = userService.getUserFromEmail(authentication.getName());
+        return resumeMapper.createResponse(resumeService.getResumeFromId(user,id));
     }
 
     @GetMapping("/label/{label}")

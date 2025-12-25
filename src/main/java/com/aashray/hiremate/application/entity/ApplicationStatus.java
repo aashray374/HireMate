@@ -1,12 +1,13 @@
 package com.aashray.hiremate.application.entity;
 
-enum ApplicationStatus {
+public enum ApplicationStatus {
     APPLIED,
     OA,
     INTERVIEW,
-    HR,
     SELECTED,
     REJECTED,
     ACCEPTED,
-    DECLINED
+    DECLINED,
+    WITHDRAWN,
+    GHOSTED
 }

@@ -127,4 +127,28 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
+
+    @ExceptionHandler(IllegalOwnershipException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalOwnership(IllegalOwnershipException e, HttpServletRequest request){
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Unauthorized",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(ApplicationAlreadyExists.class)
+    public ResponseEntity<ApiErrorResponse> handleApplicationAlreadyExists(ApplicationAlreadyExists e, HttpServletRequest request){
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
 }

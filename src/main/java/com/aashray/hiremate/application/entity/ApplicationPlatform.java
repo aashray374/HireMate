@@ -1,6 +1,6 @@
 package com.aashray.hiremate.application.entity;
 
-enum ApplicationPlatform {
+public enum ApplicationPlatform {
     LINKEDIN,
     CAREERS,
     REFERRAL,

@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class JobApplication {
+public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

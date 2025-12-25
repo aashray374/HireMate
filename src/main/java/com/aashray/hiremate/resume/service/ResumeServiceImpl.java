@@ -22,7 +22,7 @@ public class ResumeServiceImpl implements ResumeService{
     private final FileUploadUtil fileUploadUtil;
     private final ResumeRepository resumeRepository;
 
-    public ResumeServiceImpl(FileUploadUtil fileUploadUtil, ResumeRepository resumeRepository) {
+    public ResumeServiceImpl(FileUploadUtil fileUploadUtil, ResumeRepository resumeRepository, ResumeService resumeService) {
         this.fileUploadUtil = fileUploadUtil;
         this.resumeRepository = resumeRepository;
     }
@@ -73,6 +73,17 @@ public class ResumeServiceImpl implements ResumeService{
         fileUploadUtil.deleteFile(resume.getStoredFileName());
         resumeRepository.deleteById(id);
 
+    }
+
+    @Override
+    public Resume getResumeFromId(User user, Long id) {
+        Resume resume = resumeRepository.findById(id).orElse(null);
+        if(resume != null){
+            if(resume.getUser().getId().equals(user.getId())){
+                return resume;
+            }
+        }
+        throw new ResumeNotFound(id);
     }
 
 }

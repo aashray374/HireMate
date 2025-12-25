@@ -17,4 +17,6 @@ public interface ResumeService {
     Page<Resume> getAllResumeWithLabel(User user, ResumeLabel label, Pageable page);
 
     void deleteResumeWithId(User user, Long id) throws IOException;
+
+    Resume getResumeFromId(User user, Long id);
 }
