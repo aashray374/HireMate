@@ -12,7 +12,7 @@ public interface CompanyService {
 
     Page<Company> getAllCompanies(User user, Pageable page);
 
-    Company createCompany(Company entity);
+    Company createCompany(User user,Company entity);
 
     Page<Company> getAllFromLocation(User user, String location, Pageable page);
 

@@ -35,11 +35,11 @@ public class CompanyController {
     @ResponseStatus(HttpStatus.CREATED)
     public CompanyResponse createCompany(@RequestBody @Valid CreateCompanyRequest companyRequest, Authentication authentication){
         User user = userService.getUserFromEmail(authentication.getName());
-        return companyMapper.createResponse(companyService.createCompany(companyMapper.toEntity(companyRequest,user)));
+        return companyMapper.createResponse(companyService.createCompany(user ,companyMapper.toEntity(companyRequest,user)));
     }
 
     @GetMapping
-    public Page<CompanyResponse> getAllCompanies(Authentication authentication,@PageableDefault(direction = Sort.Direction.ASC, sort = "uploadedAt") Pageable page){
+    public Page<CompanyResponse> getAllCompanies(Authentication authentication,@PageableDefault(direction = Sort.Direction.ASC, sort = "id") Pageable page){
         User user = userService.getUserFromEmail(authentication.getName());
         Page<Company> companies = companyService.getAllCompanies(user,page);
 
@@ -47,7 +47,7 @@ public class CompanyController {
     }
 
     @GetMapping("/location/{location}")
-    public Page<CompanyResponse> getAllByLocation(@PathVariable String location,Authentication authentication,@PageableDefault(direction = Sort.Direction.ASC, sort = "uploadedAt") Pageable page){
+    public Page<CompanyResponse> getAllByLocation(@PathVariable String location,Authentication authentication,@PageableDefault(direction = Sort.Direction.ASC, sort = "id") Pageable page){
         User user = userService.getUserFromEmail(authentication.getName());
         Page<Company> companies = companyService.getAllFromLocation(user,location,page);
 
@@ -60,8 +60,8 @@ public class CompanyController {
         return companyMapper.createResponse(companyService.getCompanyFromId(user,id));
     }
 
-    @GetMapping("/name/{name}")
-    public CompanyResponse getByName(@PathVariable String name,Authentication authentication){
+    @GetMapping("")
+    public CompanyResponse getByName(@RequestParam("name") String name,Authentication authentication){
         User user = userService.getUserFromEmail(authentication.getName());
         return companyMapper.createResponse(companyService.getCompanyFromName(user,name));
     }

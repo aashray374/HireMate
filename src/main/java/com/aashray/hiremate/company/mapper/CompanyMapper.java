@@ -22,7 +22,7 @@ public class CompanyMapper {
         return CompanyResponse.builder()
                 .id(company.getId())
                 .name(company.getName())
-                .location(company.getWebsite())
+                .location(company.getLocation())
                 .website(company.getWebsite())
                 .build();
     }

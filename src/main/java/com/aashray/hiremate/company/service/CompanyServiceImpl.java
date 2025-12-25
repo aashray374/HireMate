@@ -2,10 +2,14 @@ package com.aashray.hiremate.company.service;
 
 import com.aashray.hiremate.company.entity.Company;
 import com.aashray.hiremate.company.repository.CompanyRepository;
+import com.aashray.hiremate.exception.CompanyAlreadyExists;
+import com.aashray.hiremate.exception.CompanyNotFound;
 import com.aashray.hiremate.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class CompanyServiceImpl implements CompanyService {
@@ -18,7 +22,10 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Company getCompanyFromName(User user, String name) {
-        return null;
+        return companyRepository
+                .findByUserAndNameIgnoreCase(user, name)
+                .orElseThrow(() -> new CompanyNotFound("The company with name: "+name+" does not exists"));
+
     }
 
     @Override
@@ -29,7 +36,7 @@ public class CompanyServiceImpl implements CompanyService {
                 return company;
             }
         }
-        return null;
+        throw new CompanyNotFound("The Company With id: "+id+" does not exists");
     }
 
     @Override
@@ -38,16 +45,16 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company createCompany(Company entity) {
-        Company company = companyRepository.findByWebsite(entity.getWebsite()).orElse(null);
-        if(company == null){
+    public Company createCompany(User user,Company entity) {
+        Optional<Company> company = companyRepository.findByUserAndNameIgnoreCase(user, entity.getName());
+        if(company.isEmpty()){
             return companyRepository.save(entity);
         }
-        return null;
+        throw new CompanyAlreadyExists("The Company Already Exists");
     }
 
     @Override
     public Page<Company> getAllFromLocation(User user, String location, Pageable page) {
-        return null;
+        return companyRepository.findAllByUserAndLocationIgnoreCase(user,location,page);
     }
 }

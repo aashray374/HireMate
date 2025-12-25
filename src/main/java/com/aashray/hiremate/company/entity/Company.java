@@ -19,7 +19,7 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
@@ -29,6 +29,5 @@ public class Company {
     private String location;
 
     @URL
-    @Column(unique = true)
     private String website;
 }

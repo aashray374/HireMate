@@ -103,4 +103,28 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+
+    @ExceptionHandler(CompanyNotFound.class)
+    public ResponseEntity<ApiErrorResponse> handleCompanyNotFound(CompanyNotFound e, HttpServletRequest request){
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(CompanyAlreadyExists.class)
+    public ResponseEntity<ApiErrorResponse> handleCompanyAlreadyExists(CompanyAlreadyExists e, HttpServletRequest request){
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
 }

@@ -13,9 +13,7 @@ import java.util.Optional;
 public interface CompanyRepository extends JpaRepository<Company,Long> {
     Page<Company> findAllByUserAndLocationIgnoreCase(User user, String location, Pageable pageable);
 
-    Page<Company> findAllByUserAndNameIgnoreCase(User user, String name,Pageable pageable);
+    Optional<Company> findByUserAndNameIgnoreCase(User user, String name);
 
     Page<Company> findAllByUser(User user, Pageable pageable);
-
-    Optional<Company> findByWebsite(String website);
 }
