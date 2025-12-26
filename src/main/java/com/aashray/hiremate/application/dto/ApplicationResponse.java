@@ -17,8 +17,6 @@ import java.time.OffsetDateTime;
 @Builder
 public class ApplicationResponse {
     private Long id;
-    private CompanyResponse company;
-    private ResumeMetadata resume;
     private String roleTitle;
     private ApplicationPlatform applicationPlatform;
     private ApplicationStatus status;
