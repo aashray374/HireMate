@@ -44,8 +44,10 @@ public class ApplicationMapper {
     public ApplicationResponse createResponse(Application application){
         return ApplicationResponse.builder()
                 .id(application.getId())
+                .company(application.getCompany().getName())
+                .resumeLabel(application.getResume().getLabel())
                 .roleTitle(application.getRoleTitle())
-                .applicationPlatform(application.getPlatform())
+                .platform(application.getPlatform())
                 .status(application.getStatus())
                 .appliedDate(application.getAppliedDate())
                 .createdAt(application.getCreatedAt())

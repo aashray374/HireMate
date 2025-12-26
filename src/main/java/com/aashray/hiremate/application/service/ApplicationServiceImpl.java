@@ -1,10 +1,14 @@
 package com.aashray.hiremate.application.service;
 
+import com.aashray.hiremate.application.entity.ApplicationPlatform;
 import com.aashray.hiremate.application.entity.ApplicationStatus;
 import com.aashray.hiremate.application.entity.Application;
 import com.aashray.hiremate.application.repository.ApplicationRepository;
 import com.aashray.hiremate.exception.ApplicationAlreadyExists;
 import com.aashray.hiremate.exception.IllegalOwnershipException;
+import com.aashray.hiremate.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -41,5 +45,31 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new ApplicationAlreadyExists();
         }
         throw new IllegalOwnershipException();
+    }
+
+    @Override
+    public Page<Application> getApplications(User user, Pageable pageable, ApplicationStatus status, Long companyId, ApplicationPlatform platform) {
+        if(status != null && platform != null && companyId != null){
+            return jobRepository.findAllByUserAndCompany_IdAndPlatformAndStatus(user,companyId,platform,status,pageable);
+        }
+        if(status == null && platform != null && companyId != null){
+            return jobRepository.findAllByUserAndCompany_IdAndPlatform(user,companyId,platform,pageable);
+        }
+        if(status != null && platform == null && companyId != null){
+            return jobRepository.findAllByUserAndStatusAndCompany_Id(user,status,companyId,pageable);
+        }
+        if(status != null && platform != null){
+            return jobRepository.findAllByUserAndStatusAndPlatform(user, status, platform, pageable);
+        }
+        if(status != null){
+            return jobRepository.findAllByUserAndStatus(user, status, pageable);
+        }
+        if(platform != null){
+            return jobRepository.findAllByUserAndPlatform(user, platform, pageable);
+        }
+        if(companyId != null){
+            return jobRepository.findAllByUserAndCompany_Id(user, companyId, pageable);
+        }
+        return jobRepository.findAllByUser(user,pageable);
     }
 }
