@@ -32,7 +32,7 @@ public class ApplicationController {
         this.applicationService = applicationService;
     }
 
-    @PostMapping("/application")
+    @PostMapping("/applications")
     @ResponseStatus(HttpStatus.CREATED)
     public ApplicationResponse createNewApplication(@RequestBody @Valid CreateApplicationRequest request, Authentication authentication){
         User user = userService.getUserFromEmail(authentication.getName());

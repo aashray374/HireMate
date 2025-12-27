@@ -5,7 +5,9 @@ import com.aashray.hiremate.application.entity.ApplicationStatus;
 import com.aashray.hiremate.application.entity.Application;
 import com.aashray.hiremate.application.repository.ApplicationRepository;
 import com.aashray.hiremate.exception.ApplicationAlreadyExists;
+import com.aashray.hiremate.exception.ApplicationNotFound;
 import com.aashray.hiremate.exception.IllegalOwnershipException;
+import com.aashray.hiremate.exception.IllegalStateTransition;
 import com.aashray.hiremate.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,7 @@ import java.util.List;
 public class ApplicationServiceImpl implements ApplicationService {
 
     private final ApplicationRepository jobRepository;
+    private final ApplicationHistoryService applicationHistoryService;
     private final Collection<ApplicationStatus> status = List.of(
             ApplicationStatus.APPLIED,
             ApplicationStatus.OA,
@@ -25,8 +28,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             ApplicationStatus.ACCEPTED,
             ApplicationStatus.OFFER
     );
-    public ApplicationServiceImpl(ApplicationRepository jobRepository) {
+    public ApplicationServiceImpl(ApplicationRepository jobRepository, ApplicationHistoryService applicationHistoryService) {
         this.jobRepository = jobRepository;
+        this.applicationHistoryService = applicationHistoryService;
     }
 
     @Override
@@ -78,13 +82,15 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application application = jobRepository.findById(applicationId).orElse(null);
 
         if(application == null || !application.getUser().getId().equals(user.getId())){
-//          TODO: throw new error
+            throw new ApplicationNotFound();
         }
 
         if(!application.getStatus().canTransitionTo(newStatus)){
-//          TODO: throw new error
+            throw new IllegalStateTransition(application.getStatus(),newStatus);
         }
+        ApplicationStatus from = application.getStatus();
         application.setStatus(newStatus);
+        applicationHistoryService.saveApplicationHistory(application,from,newStatus);
         return jobRepository.save(application);
     }
 }

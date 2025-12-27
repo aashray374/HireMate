@@ -32,5 +32,10 @@ public class ApplicationStatusHistory {
     private OffsetDateTime changedAt;
 
     private String note;
+
+    @PrePersist
+    private void init(){
+        this.changedAt = OffsetDateTime.now();
+    }
 }
 
