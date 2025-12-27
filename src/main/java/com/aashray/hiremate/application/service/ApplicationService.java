@@ -11,4 +11,6 @@ public interface ApplicationService {
     Application createNewApplication(Application jobApplication);
 
     Page<Application> getApplications(User user, Pageable pageable, ApplicationStatus status, Long companyId, ApplicationPlatform platform);
+
+    Application stateTransition(User user,Long applicationId,ApplicationStatus newStatus);
 }

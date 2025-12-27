@@ -23,7 +23,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             ApplicationStatus.OA,
             ApplicationStatus.INTERVIEW,
             ApplicationStatus.ACCEPTED,
-            ApplicationStatus.SELECTED
+            ApplicationStatus.OFFER
     );
     public ApplicationServiceImpl(ApplicationRepository jobRepository) {
         this.jobRepository = jobRepository;
@@ -71,5 +71,20 @@ public class ApplicationServiceImpl implements ApplicationService {
             return jobRepository.findAllByUserAndCompany_Id(user, companyId, pageable);
         }
         return jobRepository.findAllByUser(user,pageable);
+    }
+
+    @Override
+    public Application stateTransition(User user, Long applicationId, ApplicationStatus newStatus) {
+        Application application = jobRepository.findById(applicationId).orElse(null);
+
+        if(application == null || !application.getUser().getId().equals(user.getId())){
+//          TODO: throw new error
+        }
+
+        if(!application.getStatus().canTransitionTo(newStatus)){
+//          TODO: throw new error
+        }
+        application.setStatus(newStatus);
+        return jobRepository.save(application);
     }
 }
