@@ -9,6 +9,7 @@ import com.aashray.hiremate.exception.ApplicationNotFound;
 import com.aashray.hiremate.exception.IllegalOwnershipException;
 import com.aashray.hiremate.exception.IllegalStateTransition;
 import com.aashray.hiremate.user.entity.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -78,6 +79,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public Application stateTransition(User user, Long applicationId, ApplicationStatus newStatus) {
         Application application = jobRepository.findById(applicationId).orElse(null);
 

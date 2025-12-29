@@ -1,20 +1,20 @@
 package com.aashray.hiremate.application.dto;
 
 import com.aashray.hiremate.application.entity.ApplicationPlatform;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
 public class CreateApplicationRequest {
-    @NotBlank
+    @NotNull
     private Long companyId;
-    @NotBlank
+    @NotNull
     private Long resumeId;
-    @NotBlank
+    @NotNull
     private String roleTitle;
     private ApplicationPlatform platform;
-    @NotBlank
+    @NotNull
     private LocalDate appliedAt;
 }

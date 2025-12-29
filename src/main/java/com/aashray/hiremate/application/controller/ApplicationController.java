@@ -73,8 +73,9 @@ public class ApplicationController {
     }
 
     @GetMapping("/{id}/history")
-    public List<ApplicationHistoryResponse> getApplicationHistory(@PathVariable Long id){
-        List<ApplicationStatusHistory>  history = applicationHistoryService.findApplicationHistoryById(id);
+    public List<ApplicationHistoryResponse> getApplicationHistory(@PathVariable Long id,Authentication authentication){
+        User user = userService.getUserFromEmail(authentication.getName());
+        List<ApplicationStatusHistory>  history = applicationHistoryService.findApplicationHistoryById(id,user);
         List<ApplicationHistoryResponse> responseList = new ArrayList<>();
 
         for(ApplicationStatusHistory h : history){
