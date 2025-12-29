@@ -7,6 +7,8 @@ import com.aashray.hiremate.application.entity.ApplicationStatusHistory;
 import com.aashray.hiremate.application.repository.ApplicationHistoryRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ApplicationHistoryServiceImpl implements ApplicationHistoryService{
 
@@ -25,5 +27,10 @@ public class ApplicationHistoryServiceImpl implements ApplicationHistoryService{
                 .build();
 
         applicationHistoryRepository.save(applicationStatusHistory);
+    }
+
+    @Override
+    public List<ApplicationStatusHistory> findApplicationHistoryById(Long id) {
+        return applicationHistoryRepository.findAllByApplication_Id(id);
     }
 }
