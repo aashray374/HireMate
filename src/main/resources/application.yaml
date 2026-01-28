@@ -1,3 +1,10 @@
 spring:
   application:
     name: hiremate
+  profiles:
+    active: dev
+  security:
+    user:
+      name: iiita
+      password: iiita123
+      roles: ADMIN
