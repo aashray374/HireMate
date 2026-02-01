@@ -8,3 +8,6 @@ spring:
       name: iiita
       password: iiita123
       roles: ADMIN
+
+jwt:
+  secretKey: qwertyuiopmnbvcxzAssiTussiAlmightyPussyasdfghjklpoiuytrewq

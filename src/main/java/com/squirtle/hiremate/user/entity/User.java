@@ -1,0 +1,44 @@
+package com.squirtle.hiremate.user.entity;
+
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(
+        name = "user_table"
+)
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    private String username;
+
+    @Column(unique = true)
+    private String email;
+
+    private String password;
+
+    @Column(updatable = false)
+    private OffsetDateTime createdAt;
+
+    private OffsetDateTime updatedAt;
+
+    @PrePersist
+    public void init(){
+        OffsetDateTime time = OffsetDateTime.now();
+        this.createdAt = time;
+        this.updatedAt = time;
+    }
+
+
+}
