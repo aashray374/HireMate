@@ -42,6 +42,8 @@ public class User {
 
     private OffsetDateTime updatedAt;
 
+    private String template;
+
     @PrePersist
     public void init(){
         OffsetDateTime time = OffsetDateTime.now();

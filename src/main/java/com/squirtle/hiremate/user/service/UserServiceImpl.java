@@ -65,6 +65,19 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void addTemplate(String template, String email) {
+        User user = getUserByEmail(email);
+        user.setTemplate(template);
+        userRepository.save(user);
+    }
+
+    @Override
+    public String getTemplate(String email) {
+        User user = getUserByEmail(email);
+        return user.getTemplate();
+    }
+
+    @Override
     public void createNewUser(SignUpRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElse(null);
         if(user == null){
