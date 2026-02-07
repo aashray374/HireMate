@@ -57,6 +57,14 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public User getUserByEmail(String email){
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if(user == null)    throw new RuntimeException("User Not FOund");
+        return user;
+    }
+
+    @Override
     public void createNewUser(SignUpRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElse(null);
         if(user == null){

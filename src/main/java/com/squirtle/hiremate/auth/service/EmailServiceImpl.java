@@ -3,6 +3,7 @@ package com.squirtle.hiremate.auth.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,6 +12,7 @@ public class EmailServiceImpl implements EmailService {
 
 //    TODO: Improve the mail
     @Override
+    @Async
     public void sendOtp(String to, String Otp) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(to);

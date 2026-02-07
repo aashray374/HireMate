@@ -51,7 +51,7 @@ public class JwtUtil {
 
     public boolean verifyToken(String token, String email){
         try{
-            return getClaims(token).getSubject().equals(email) && isExpired(token);
+            return getClaims(token).getSubject().equals(email) && !isExpired(token);
         }catch (JwtException _){
             return false;
         }

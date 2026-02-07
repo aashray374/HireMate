@@ -8,12 +8,17 @@ spring:
       name: iiita
       password: iiita123
       roles: ADMIN
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: <Enter your email here>
-    password: <Enter your app password>
+    username: ${email}
+    password: ${password}
     properties:
       mail:
         smtp:
@@ -26,4 +31,11 @@ spring:
     port: 6379
 
 jwt:
-  secretKey: <Enter secret key>
+  secretKey: ${jwtSecret}
+
+cloudinary:
+  cloud_name: ${cloudName}
+  api_key: ${apiKey}
+  api_secret: ${apiSecret}
+  path:
+    resume: resume

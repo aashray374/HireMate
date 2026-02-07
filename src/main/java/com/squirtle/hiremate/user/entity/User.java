@@ -1,6 +1,7 @@
 package com.squirtle.hiremate.user.entity;
 
 
+import com.squirtle.hiremate.resume.entity.Resume;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,14 @@ public class User {
 
     private String password;
 
+    @OneToOne(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "resume_id")
+    private Resume resume = null;
+
     @Column(updatable = false)
     private OffsetDateTime createdAt;
 
@@ -40,5 +49,9 @@ public class User {
         this.updatedAt = time;
     }
 
+    @PreUpdate
+    public void update(){
+        this.updatedAt = OffsetDateTime.now();
+    }
 
 }
