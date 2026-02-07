@@ -9,5 +9,21 @@ spring:
       password: iiita123
       roles: ADMIN
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: <Enter your email here>
+    password: <Enter your app password>
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  redis:
+    host: localhost
+    port: 6379
+
 jwt:
-  secretKey: qwertyuiopmnbvcxzAssiTussiAlmightyPussyasdfghjklpoiuytrewq
+  secretKey: <Enter secret key>
