@@ -29,4 +29,10 @@ public class UserControlller {
         String email = authentication.getName();
         return userService.getTemplate(email);
     }
+
+    @GetMapping("/generate-email")
+    public String generateEmail(Authentication authentication){
+        String email = authentication.getName();
+        return userService.generateEmail(email);
+    }
 }

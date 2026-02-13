@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
-    void createNewUser(@Valid SignUpRequest request);
     void storeInRedisandSendOtp(@Valid SignUpRequest request);
     void verifyOtp(@Valid VerifyOtp request);
     User getUserByEmail(String email);
@@ -15,4 +14,6 @@ public interface UserService extends UserDetailsService {
     void addTemplate(String template, String email);
 
     String getTemplate(String email);
+
+    String generateEmail(String email);
 }

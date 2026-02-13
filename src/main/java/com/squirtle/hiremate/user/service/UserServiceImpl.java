@@ -6,6 +6,7 @@ import com.squirtle.hiremate.auth.service.EmailService;
 import com.squirtle.hiremate.auth.util.OtpGenerator;
 import com.squirtle.hiremate.user.entity.User;
 import com.squirtle.hiremate.user.repository.UserRepository;
+import com.squirtle.hiremate.utils.GeminiService;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -30,19 +31,22 @@ public class UserServiceImpl implements UserService{
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GeminiService geminiService;
 
     public UserServiceImpl(
             StringRedisTemplate redisTemplate,
             ObjectMapper objectMapper,
             EmailService emailService,
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            GeminiService geminiService
     ) {
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
         this.emailService = emailService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.geminiService = geminiService;
     }
 
     @Override
@@ -78,19 +82,28 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void createNewUser(SignUpRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
-        if(user == null){
-            user = User.builder()
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .username(request.getUsername())
-                    .build();
-            userRepository.save(user);
-        }else{
-             throw new RuntimeException("User Already Exists");
-        }
+    public String generateEmail(String email) {
+        User user = getUserByEmail(email);
+        String url = user.getResume().getUrl();
+
+        String promt = "Write me an email asking for refferal with job specifications "+" jobId: 12345 company: google role: Software development intern "+" here is the link for my resume "+url+" generate a personalized message according to my resume and just give the email body in response and nothing else";
+        return geminiService.getAnswer(promt);
     }
+
+
+//    public void createNewUser(SignUpRequest request) {
+//        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
+//        if(user == null){
+//            user = User.builder()
+//                    .email(request.getEmail())
+//                    .password(passwordEncoder.encode(request.getPassword()))
+//                    .username(request.getUsername())
+//                    .build();
+//            userRepository.save(user);
+//        }else{
+//             throw new RuntimeException("User Already Exists");
+//        }
+//    }
 
     @Override
     public void storeInRedisandSendOtp(SignUpRequest request) {

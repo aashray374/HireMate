@@ -12,6 +12,16 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  ai:
+    retry:
+      enabled: false
+    google:
+      genai:
+        api-key: ${geminiApiKey}
+        chat:
+          options:
+            model: ${geminiModel}
+
 
 
   mail:
