@@ -140,6 +140,14 @@
 			<artifactId>spring-ai-starter-model-google-genai</artifactId>
 		</dependency>
 
+
+<!--csv parser-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.10.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>

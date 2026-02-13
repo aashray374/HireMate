@@ -91,20 +91,6 @@ public class UserServiceImpl implements UserService{
     }
 
 
-//    public void createNewUser(SignUpRequest request) {
-//        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
-//        if(user == null){
-//            user = User.builder()
-//                    .email(request.getEmail())
-//                    .password(passwordEncoder.encode(request.getPassword()))
-//                    .username(request.getUsername())
-//                    .build();
-//            userRepository.save(user);
-//        }else{
-//             throw new RuntimeException("User Already Exists");
-//        }
-//    }
-
     @Override
     public void storeInRedisandSendOtp(SignUpRequest request) {
         try {
