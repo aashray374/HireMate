@@ -52,6 +52,7 @@ public class AuthController {
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public void signup(@RequestBody @Valid SignUpRequest request){
+        System.out.println("--------------------------------------------------------------------------------h-----------------------------------------------");
         userService.storeInRedisandSendOtp(request);
     }
 

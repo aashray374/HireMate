@@ -39,7 +39,8 @@ public class ChatController {
         Message saved = chatService.saveMessage(
                 groupId,
                 senderId,
-                dto.getContent()
+                dto.getContent(),
+                dto.getType()
         );
 
         messagingTemplate.convertAndSend(

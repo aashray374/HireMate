@@ -49,3 +49,8 @@ cloudinary:
   api_secret: ${apiSecret}
   path:
     resume: resume
+
+jasypt:
+  encryptor:
+    algorithim : PBEWithMD%AndDES
+    password : ${symmetricEncry ptionKey}

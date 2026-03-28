@@ -90,6 +90,23 @@ public class UserServiceImpl implements UserService{
         return geminiService.getAnswer(promt);
     }
 
+    @Override
+    public void disconnectGmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User Not Found"));
+        if(user.getAppPassword().isBlank()){
+            throw new RuntimeException(("Gmail not connected"));
+        }
+        user.setAppPassword("");
+        userRepository.save(user);
+    }
+
+    @Override
+    public void connectGmail(String email, String appPassword) {
+        User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User Not Found"));
+        user.setAppPassword(appPassword);
+        userRepository.save(user);
+    }
+
 
     @Override
     public void storeInRedisandSendOtp(SignUpRequest request) {

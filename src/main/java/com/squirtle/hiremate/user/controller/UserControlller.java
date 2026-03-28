@@ -3,10 +3,7 @@ package com.squirtle.hiremate.user.controller;
 
 import com.squirtle.hiremate.user.service.UserService;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -34,5 +31,17 @@ public class UserControlller {
     public String generateEmail(Authentication authentication){
         String email = authentication.getName();
         return userService.generateEmail(email);
+    }
+
+    @PostMapping("/connect-gmail")
+    public void connectEmail(Authentication authentication, @RequestBody String appPassword){
+        String email = authentication.getName();
+        userService.connectGmail(email,appPassword);
+    }
+
+    @DeleteMapping("/disconnect-gmail")
+    public void disconnectGmail(Authentication authentication){
+        String email = authentication.getName();
+        userService.disconnectGmail(email);
     }
 }

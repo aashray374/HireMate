@@ -16,4 +16,8 @@ public interface UserService extends UserDetailsService {
     String getTemplate(String email);
 
     String generateEmail(String email);
+
+    void disconnectGmail(String email);
+
+    void connectGmail(String email, String appPassword);
 }

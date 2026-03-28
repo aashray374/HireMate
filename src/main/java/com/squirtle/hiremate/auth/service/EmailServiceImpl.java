@@ -20,4 +20,14 @@ public class EmailServiceImpl implements EmailService {
         msg.setText("Your OTP is: " + Otp);
         mailSender.send(msg);
     }
+
+    @Override
+    public void SendReferralEmail(String to, String subject, String body, JavaMailSender mailSender) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(to);
+        msg.setSubject(subject);
+        msg.setText(body);
+        // Add attachment from cloudinary
+        mailSender.send(msg);
+    }
 }

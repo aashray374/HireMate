@@ -1,6 +1,7 @@
 package com.squirtle.hiremate.chat.entity;
 
 
+import com.squirtle.hiremate.chat.dto.MessageType;
 import com.squirtle.hiremate.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,8 @@ public class Message {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    private MessageType type;
 
     private OffsetDateTime sentAt;
 

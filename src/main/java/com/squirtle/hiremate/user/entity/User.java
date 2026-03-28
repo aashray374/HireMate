@@ -1,6 +1,7 @@
 package com.squirtle.hiremate.user.entity;
 
 
+import com.squirtle.hiremate.config.CryptoConverter;
 import com.squirtle.hiremate.resume.entity.Resume;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,6 +44,9 @@ public class User {
     private OffsetDateTime updatedAt;
 
     private String template;
+
+    @Convert(converter = CryptoConverter.class)
+    private String appPassword;
 
     @PrePersist
     public void init(){
