@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
     void storeInRedisandSendOtp(@Valid SignUpRequest request);
-    void verifyOtp(@Valid VerifyOtp request);
+    boolean verifyOtp(@Valid VerifyOtp request);
     User getUserByEmail(String email);
 
     void addTemplate(String template, String email);

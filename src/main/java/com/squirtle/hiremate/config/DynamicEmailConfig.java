@@ -1,10 +1,12 @@
 package com.squirtle.hiremate.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
+@Configuration
 public class DynamicEmailConfig {
 
     public JavaMailSender createMailSender(String email, String password) {

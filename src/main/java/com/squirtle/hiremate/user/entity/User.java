@@ -1,6 +1,5 @@
 package com.squirtle.hiremate.user.entity;
 
-
 import com.squirtle.hiremate.config.CryptoConverter;
 import com.squirtle.hiremate.resume.entity.Resume;
 import jakarta.persistence.*;
@@ -10,13 +9,12 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(
-        name = "user_table"
-)
+@Table(name = "user_table")
 public class User {
 
     @Id
@@ -25,18 +23,14 @@ public class User {
 
     private String username;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String password;
 
-    @OneToOne(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "resume_id")
-    private Resume resume = null;
+    private Resume resume;
 
     @Column(updatable = false)
     private OffsetDateTime createdAt;
@@ -49,15 +43,14 @@ public class User {
     private String appPassword;
 
     @PrePersist
-    public void init(){
-        OffsetDateTime time = OffsetDateTime.now();
-        this.createdAt = time;
-        this.updatedAt = time;
+    public void init() {
+        OffsetDateTime now = OffsetDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
     @PreUpdate
-    public void update(){
+    public void update() {
         this.updatedAt = OffsetDateTime.now();
     }
-
 }

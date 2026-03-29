@@ -1,17 +1,16 @@
 package com.squirtle.hiremate.auth.dto;
 
 import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
-@AllArgsConstructor
 public class LoginRequest {
-    @Email
-    @NonNull
+
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @NonNull
+    @NotBlank(message = "Password is required")
     private String password;
 }

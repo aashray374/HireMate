@@ -6,5 +6,5 @@ import com.squirtle.hiremate.chat.entity.Message;
 import java.util.UUID;
 
 public interface ChatService {
-    Message saveMessage(UUID groupId, UUID senderId, String content, MessageType type);
+    Message saveMessage(UUID groupId, String senderEmail, String content, MessageType type);
 }

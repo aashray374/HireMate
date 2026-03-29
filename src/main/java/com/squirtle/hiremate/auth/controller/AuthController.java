@@ -5,6 +5,7 @@ import com.squirtle.hiremate.auth.dto.AuthResponse;
 import com.squirtle.hiremate.auth.dto.LoginRequest;
 import com.squirtle.hiremate.auth.dto.SignUpRequest;
 import com.squirtle.hiremate.auth.dto.VerifyOtp;
+import com.squirtle.hiremate.exception.BadRequestException;
 import com.squirtle.hiremate.security.jwt.JwtUtil;
 import com.squirtle.hiremate.user.service.UserService;
 import jakarta.validation.Valid;
@@ -52,14 +53,18 @@ public class AuthController {
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public void signup(@RequestBody @Valid SignUpRequest request){
-        System.out.println("--------------------------------------------------------------------------------h-----------------------------------------------");
         userService.storeInRedisandSendOtp(request);
     }
 
     @PostMapping("/verify-otp")
-    @ResponseStatus(HttpStatus.CONTINUE)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> verify(@RequestBody @Valid VerifyOtp request) {
-        userService.verifyOtp(request);
+        boolean isVerified = userService.verifyOtp(request);
+
+        if(!isVerified){
+            throw new BadRequestException("Expired or Invalid OTP");
+        }
+
         return ResponseEntity.ok("The user has been created.\n");
     }
 }

@@ -1,5 +1,6 @@
 package com.squirtle.hiremate.resume.service;
 
+import com.squirtle.hiremate.exception.BadRequestException;
 import com.squirtle.hiremate.resume.dto.ResumeUploadRequest;
 import com.squirtle.hiremate.resume.dto.ResumeUploadResponse;
 import com.squirtle.hiremate.resume.entity.Resume;
@@ -8,17 +9,18 @@ import com.squirtle.hiremate.user.entity.User;
 import com.squirtle.hiremate.user.service.UserService;
 import com.squirtle.hiremate.utils.CloudinaryUtil;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ResumeServiceImpl implements ResumeService {
-
-    private static final Logger log = LoggerFactory.getLogger(ResumeServiceImpl.class);
 
     private final ResumeRepository repository;
     private final CloudinaryUtil cloudinaryUtil;
@@ -27,58 +29,57 @@ public class ResumeServiceImpl implements ResumeService {
     @Value("${cloudinary.path.resume}")
     private String resumeFolderName;
 
-    public ResumeServiceImpl(
-            ResumeRepository repository,
-            CloudinaryUtil cloudinaryUtil,
-            UserService userService
-    ) {
-        this.repository = repository;
-        this.cloudinaryUtil = cloudinaryUtil;
-        this.userService = userService;
-    }
+    private static final long MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
     @Override
     @Transactional
     public ResumeUploadResponse upload(String email, ResumeUploadRequest request) {
 
-        log.info("Starting resume upload for user: {}", email);
+        MultipartFile file = request.getFile();
+
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("File cannot be empty");
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new BadRequestException("File size exceeds 2MB");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null ||
+                (!contentType.equals("application/pdf") &&
+                        !contentType.equals("application/msword") &&
+                        !contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document"))) {
+            throw new BadRequestException("Only PDF/DOC/DOCX files allowed");
+        }
 
         User user = userService.getUserByEmail(email);
 
-        if (user.getResume() != null) {
-            log.info(
-                    "Existing resume found for user: {}. Deleting publicId={}",
-                    email,
-                    user.getResume().getPublicId()
-            );
+        try {
+            // delete old resume
+            if (user.getResume() != null) {
+                cloudinaryUtil.deleteFile(user.getResume().getPublicId());
+                user.setResume(null);
+            }
 
-            cloudinaryUtil.deleteFile(user.getResume().getPublicId());
-            user.setResume(null);
+            // upload new file
+            Map<String, String> uploadResult =
+                    cloudinaryUtil.uploadFile(file, resumeFolderName);
+
+            Resume resume = Resume.builder()
+                    .url(uploadResult.get("url"))
+                    .publicId(uploadResult.get("publicId"))
+                    .user(user)
+                    .build();
+
+            repository.save(resume);
+            user.setResume(resume);
+
+            return new ResumeUploadResponse(resume.getUrl());
+
+        } catch (Exception e) {
+            log.error("Resume upload failed for user: {}", email, e);
+            throw new BadRequestException("Resume upload failed");
         }
-
-        log.debug("Uploading resume to Cloudinary folder: {}", resumeFolderName);
-
-        Map<String, String> uploadResult =
-                cloudinaryUtil.uploadFile(request.getFile(), resumeFolderName);
-
-        log.info(
-                "Resume uploaded successfully for user: {}. publicId={}",
-                email,
-                uploadResult.get("publicId")
-        );
-
-        Resume resume = Resume.builder()
-                .url(uploadResult.get("url"))
-                .publicId(uploadResult.get("publicId"))
-                .user(user)
-                .updatedAt(java.time.OffsetDateTime.now())
-                .build();
-
-        repository.save(resume);
-        user.setResume(resume);
-
-        log.info("Resume entity persisted for user: {}", email);
-
-        return new ResumeUploadResponse(resume.getUrl());
     }
 }

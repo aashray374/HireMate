@@ -1,6 +1,7 @@
 package com.squirtle.hiremate.utils;
 
 import com.cloudinary.Cloudinary;
+import com.squirtle.hiremate.exception.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,7 +28,6 @@ public class CloudinaryUtil {
                     cloudinary.uploader().upload(file.getBytes(), options);
 
             String publicId = (String) uploadedFile.get("public_id");
-//            String url = (String) uploadedFile.get("secure_url");
 
             String url = cloudinary.url().secure(true).generate(publicId);
             return Map.of(
@@ -36,7 +36,7 @@ public class CloudinaryUtil {
             );
 
         } catch (IOException e) {
-            throw new RuntimeException("Error Uploading File", e);
+            throw new BadRequestException("Error uploading file");
         }
     }
 
@@ -49,11 +49,11 @@ public class CloudinaryUtil {
             String status = (String) result.get("result");
 
             if (!"ok".equals(status)) {
-                throw new RuntimeException("Failed to delete file from Cloudinary: " + status);
+                throw new BadRequestException("Error deleting file");
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting file from Cloudinary", e);
+            throw new BadRequestException("Error deleting file");
         }
     }
 }

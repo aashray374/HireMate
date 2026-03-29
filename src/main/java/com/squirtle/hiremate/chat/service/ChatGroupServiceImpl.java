@@ -4,6 +4,7 @@ import com.squirtle.hiremate.chat.entity.ChatGroup;
 import com.squirtle.hiremate.chat.entity.GroupMember;
 import com.squirtle.hiremate.chat.repository.ChatGroupRepository;
 import com.squirtle.hiremate.chat.repository.GroupMemberRepository;
+import com.squirtle.hiremate.exception.ResourceNotFoundException;
 import com.squirtle.hiremate.user.entity.User;
 import com.squirtle.hiremate.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -25,29 +26,30 @@ public class ChatGroupServiceImpl implements ChatGroupService {
     }
 
 
+
     @Override
     @Transactional
     public ChatGroup createGroup(String groupName, String creatorEmail) {
+
         User creator = userRepository.findByEmail(creatorEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        ChatGroup group = ChatGroup.builder()
-                .name(groupName)
-                .createdBy(creator)
-                .build();
+        ChatGroup group = chatGroupRepository.save(
+                ChatGroup.builder()
+                        .name(groupName)
+                        .createdBy(creator)
+                        .build()
+        );
 
-        ChatGroup savedGroup = chatGroupRepository.save(group);
+        groupMemberRepository.save(
+                GroupMember.builder()
+                        .group(group)
+                        .user(creator)
+                        .build()
+        );
 
-        GroupMember member = GroupMember.builder()
-                .group(savedGroup)
-                .user(creator)
-                .build();
-
-        groupMemberRepository.save(member);
-
-        return savedGroup;
+        return group;
     }
-
     @Override
     @Transactional
     public void addMember(UUID groupId, String requestingUserEmail, String newMemberEmail) {

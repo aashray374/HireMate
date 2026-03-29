@@ -3,9 +3,9 @@ package com.squirtle.hiremate.chat.controller;
 import com.squirtle.hiremate.chat.dto.ChatMessageDto;
 import com.squirtle.hiremate.chat.entity.Message;
 import com.squirtle.hiremate.chat.service.ChatService;
-import com.squirtle.hiremate.user.service.UserService;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
+import com.squirtle.hiremate.exception.BadRequestException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -13,32 +13,26 @@ import java.security.Principal;
 import java.util.UUID;
 
 @Controller
+@RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
-    private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public ChatController(ChatService chatService, UserService userService, SimpMessagingTemplate messagingTemplate) {
-        this.chatService = chatService;
-        this.userService = userService;
-        this.messagingTemplate = messagingTemplate;
-    }
-
     @MessageMapping("/group/{groupId}")
-    public void sendMessage(@DestinationVariable UUID groupId,
-                            ChatMessageDto dto,
-                            Principal principal) {
+    public void sendMessage(
+            @DestinationVariable UUID groupId,
+            ChatMessageDto dto,
+            Principal principal
+    ) {
 
-        String email = principal.getName();
-
-        UUID senderId = userService
-                .getUserByEmail(email)
-                .getId();
+        if (dto.getContent() == null || dto.getContent().isBlank()) {
+            throw new BadRequestException("Message cannot be empty");
+        }
 
         Message saved = chatService.saveMessage(
                 groupId,
-                senderId,
+                principal.getName(),
                 dto.getContent(),
                 dto.getType()
         );
