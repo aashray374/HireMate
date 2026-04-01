@@ -4,9 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squirtle.hiremate.auth.dto.SignUpRequest;
 import com.squirtle.hiremate.auth.dto.VerifyOtp;
 import com.squirtle.hiremate.common.email.service.EmailService;
+import com.squirtle.hiremate.common.exception.ExternalServiceException;
+import com.squirtle.hiremate.common.utils.CloudinaryUtil;
+import com.squirtle.hiremate.common.utils.FileParser;
 import com.squirtle.hiremate.common.utils.OtpGenerator;
 import com.squirtle.hiremate.common.exception.BadRequestException;
 import com.squirtle.hiremate.common.exception.ResourceNotFoundException;
+import com.squirtle.hiremate.job.entity.Job;
 import com.squirtle.hiremate.user.entity.User;
 import com.squirtle.hiremate.user.repository.UserRepository;
 import com.squirtle.hiremate.common.utils.GeminiService;
@@ -20,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -32,6 +38,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final GeminiService geminiService;
+    private final CloudinaryUtil cloudinaryUtil;
+    private final FileParser parser;
 
     private static final String OTP_PREFIX = "otp:";
     private static final String SIGNUP_PREFIX = "signup:";
@@ -68,17 +76,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String generateEmail(String email) {
+    public String generateEmail(String email, Job job) {
         User user = getUserByEmail(email);
 
         if (user.getResume() == null || user.getResume().getUrl() == null) {
             throw new BadRequestException("Resume not uploaded");
         }
+        byte[] file = cloudinaryUtil.downloadFile(user.getResume().getUrl());
+        String resume = parser.getCleanedText(file);
+        String prompt = "Write a referral email for "+job.toString()+" take my details form my resume to generate a personalized email enclose the email body within <<body>> and in the place of recipients name put <<name>>"+resume;
 
-        String prompt = "Write a referral email for jobId:12345 company:Google role:SDE Intern. Resume: "
-                + user.getResume().getUrl();
+        String response = geminiService.getAnswer(prompt);
 
-        return geminiService.getAnswer(prompt);
+        Pattern pattern = Pattern.compile("<<body>>(.*?)<<body>>", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(response);
+
+        while (matcher.find()) {
+            String content = matcher.group(1);
+
+            if (content.contains("<<name>>")) {
+                return content;
+            }
+        }
+        throw new ExternalServiceException("Gemini Service Not Working");
     }
 
     @Override

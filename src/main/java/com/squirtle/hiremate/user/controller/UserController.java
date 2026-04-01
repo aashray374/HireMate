@@ -28,10 +28,10 @@ public class UserController {
         return userService.getTemplate(authentication.getName());
     }
 
-    @GetMapping("/generate-email")
-    public String generateEmail(Authentication authentication) {
-        return userService.generateEmail(authentication.getName());
-    }
+//    @GetMapping("/generate-email")
+//    public String generateEmail(Authentication authentication) {
+//        return userService.generateEmail(authentication.getName());
+//    }
 
     @PostMapping("/connect-gmail")
     public void connectEmail(

@@ -34,7 +34,8 @@ public class ChatController {
                 groupId,
                 principal.getName(),
                 dto.getContent(),
-                dto.getType()
+                dto.getType(),
+                dto.getPayload()
         );
 
         messagingTemplate.convertAndSend(

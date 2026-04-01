@@ -1,7 +1,6 @@
 package com.squirtle.hiremate.chat.entity;
 
 
-import com.squirtle.hiremate.chat.dto.MessageType;
 import com.squirtle.hiremate.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;

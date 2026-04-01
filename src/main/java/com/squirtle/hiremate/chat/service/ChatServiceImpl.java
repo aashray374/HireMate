@@ -1,24 +1,24 @@
 package com.squirtle.hiremate.chat.service;
 
+import com.squirtle.hiremate.chat.dto.EventDTO;
 import com.squirtle.hiremate.common.config.RabbitMQConfig;
 import com.squirtle.hiremate.common.email.dto.ReferralEmailMessage;
-import com.squirtle.hiremate.chat.dto.MessageType;
+import com.squirtle.hiremate.chat.entity.MessageType;
 import com.squirtle.hiremate.chat.entity.*;
 import com.squirtle.hiremate.chat.repository.*;
 import com.squirtle.hiremate.common.exception.BadRequestException;
 import com.squirtle.hiremate.common.exception.ResourceNotFoundException;
 import com.squirtle.hiremate.common.exception.UnauthorizedException;
-import com.squirtle.hiremate.common.config.DynamicEmailConfig;
 import com.squirtle.hiremate.common.utils.CloudinaryUtil;
 import com.squirtle.hiremate.contacts.entity.Contact;
 import com.squirtle.hiremate.contacts.repository.ContactRepository;
+import com.squirtle.hiremate.job.entity.Job;
 import com.squirtle.hiremate.user.entity.User;
 import com.squirtle.hiremate.user.repository.UserRepository;
 import com.squirtle.hiremate.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,24 +34,22 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final ContactRepository contactRepository;
     private final UserService userService;
-    private final DynamicEmailConfig emailConfig;
     private final CloudinaryUtil cloudinaryUtil;
     private final RabbitTemplate rabbitTemplate;
 
-    public ChatServiceImpl(MessageRepository messageRepository, GroupMemberRepository groupMemberRepository, ChatGroupRepository chatGroupRepository, UserRepository userRepository, ContactRepository contactRepository, UserService userService, DynamicEmailConfig emailConfig, CloudinaryUtil cloudinaryUtil, RabbitTemplate rabbitTemplate) {
+    public ChatServiceImpl(MessageRepository messageRepository, GroupMemberRepository groupMemberRepository, ChatGroupRepository chatGroupRepository, UserRepository userRepository, ContactRepository contactRepository, UserService userService,CloudinaryUtil cloudinaryUtil, RabbitTemplate rabbitTemplate) {
         this.messageRepository = messageRepository;
         this.groupMemberRepository = groupMemberRepository;
         this.chatGroupRepository = chatGroupRepository;
         this.userRepository = userRepository;
         this.contactRepository = contactRepository;
         this.userService = userService;
-        this.emailConfig = emailConfig;
         this.cloudinaryUtil = cloudinaryUtil;
         this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
-    public Message saveMessage(UUID groupId, String senderEmail, String content, MessageType type) {
+    public Message saveMessage(UUID groupId, String senderEmail, String content, MessageType type, Job payload) {
 
         User sender = userRepository.findByEmail(senderEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -73,33 +71,34 @@ public class ChatServiceImpl implements ChatService {
         );
 
         if (type == MessageType.TRIGGER_EVENT) {
-            handleTriggerEvent(groupId);
+            if(payload == null){
+                throw new BadRequestException("No information provided for Job Application");
+            }
+            handleTriggerEvent(groupId,payload);
         }
 
         return message;
     }
 
-    private void handleTriggerEvent(UUID groupId) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EVENT_EXCHANGE,RabbitMQConfig.EVENT_ROUTING_KEY,groupId);
+    private void handleTriggerEvent(UUID groupId, Job job) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EVENT_EXCHANGE,RabbitMQConfig.EVENT_ROUTING_KEY,new EventDTO(groupId,job));
     }
 
 
     @RabbitListener(queues = RabbitMQConfig.EVENT_QUEUE)
-    public void consumeTriggerEvent(UUID groupId){
-        String company = "";
+    public void consumeTriggerEvent(EventDTO eventDTO){
+        String company = eventDTO.getJob().getCompany();
         List<Contact> contacts = contactRepository.findByCompanyIgnoreCase(company);
 
         try {
             String subject = "Referral Request";
-            List<GroupMember> members  = groupMemberRepository.findByGroupId(groupId);
+            List<GroupMember> members  = groupMemberRepository.findByGroupId(eventDTO.getGroupId());
 
             for(GroupMember m : members){
                 User user = m.getUser();
-                String baseBody = userService.generateEmail(user.getEmail());
+                String baseBody = userService.generateEmail(user.getEmail(),eventDTO.getJob());
                 String fileName = user.getUsername()+"_resume.pdf";
                 byte[] file = cloudinaryUtil.downloadFile(user.getResume().getUrl());
-                JavaMailSender mailSender = emailConfig.createMailSender(user.getEmail(), user.getAppPassword());
-
                 for (Contact contact : contacts) {
                     String body = baseBody.replace("<<name>>", contact.getName());
 

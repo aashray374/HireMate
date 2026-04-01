@@ -2,6 +2,7 @@ package com.squirtle.hiremate.user.service;
 
 import com.squirtle.hiremate.auth.dto.SignUpRequest;
 import com.squirtle.hiremate.auth.dto.VerifyOtp;
+import com.squirtle.hiremate.job.entity.Job;
 import com.squirtle.hiremate.user.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,7 +16,7 @@ public interface UserService extends UserDetailsService {
 
     String getTemplate(String email);
 
-    String generateEmail(String email);
+    String generateEmail(String email, Job job);
 
     void disconnectGmail(String email);
 

@@ -1,4 +1,4 @@
-package com.squirtle.hiremate.chat.dto;
+package com.squirtle.hiremate.chat.entity;
 
 public enum MessageType {
     NORMAL,
