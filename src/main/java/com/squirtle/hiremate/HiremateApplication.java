@@ -3,11 +3,13 @@ package com.squirtle.hiremate;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
+@EnableAsync
 public class HiremateApplication {
 
-	public static void main(String[] args) {
+	static void main(String[] args) {
 		Dotenv dotenv = Dotenv.configure()
 				.ignoreIfMissing()
 				.load();

@@ -1,7 +1,6 @@
 package com.squirtle.hiremate.common.email.dto;
 
 import lombok.*;
-import org.springframework.mail.javamail.JavaMailSender;
 
 
 @Getter
@@ -9,9 +8,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EmailMessage {
+public class ReferralEmailMessage {
     private String to;
     private String subject;
     private String body;
-    private JavaMailSender mailSender;
+    private String email;
+    private String password;
+    private byte[] file;
+    private String fileName;
 }

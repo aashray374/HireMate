@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +56,14 @@ public class CloudinaryUtil {
 
         } catch (Exception e) {
             throw new BadRequestException("Error deleting file");
+        }
+    }
+
+    public byte[] downloadFile(String fileUrl) {
+        try (InputStream in = new URL(fileUrl).openStream()) {
+            return in.readAllBytes();
+        } catch (Exception e) {
+            throw new BadRequestException("Failed to download resume");
         }
     }
 }
