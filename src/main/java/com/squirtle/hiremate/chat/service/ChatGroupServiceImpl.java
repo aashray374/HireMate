@@ -4,7 +4,7 @@ import com.squirtle.hiremate.chat.entity.ChatGroup;
 import com.squirtle.hiremate.chat.entity.GroupMember;
 import com.squirtle.hiremate.chat.repository.ChatGroupRepository;
 import com.squirtle.hiremate.chat.repository.GroupMemberRepository;
-import com.squirtle.hiremate.exception.ResourceNotFoundException;
+import com.squirtle.hiremate.common.exception.ResourceNotFoundException;
 import com.squirtle.hiremate.user.entity.User;
 import com.squirtle.hiremate.user.repository.UserRepository;
 import jakarta.transaction.Transactional;

@@ -1,13 +1,13 @@
 package com.squirtle.hiremate.resume.service;
 
-import com.squirtle.hiremate.exception.BadRequestException;
+import com.squirtle.hiremate.common.exception.BadRequestException;
 import com.squirtle.hiremate.resume.dto.ResumeUploadRequest;
 import com.squirtle.hiremate.resume.dto.ResumeUploadResponse;
 import com.squirtle.hiremate.resume.entity.Resume;
 import com.squirtle.hiremate.resume.repository.ResumeRepository;
 import com.squirtle.hiremate.user.entity.User;
 import com.squirtle.hiremate.user.service.UserService;
-import com.squirtle.hiremate.utils.CloudinaryUtil;
+import com.squirtle.hiremate.common.utils.CloudinaryUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

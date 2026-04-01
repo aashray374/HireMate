@@ -1,7 +1,8 @@
 package com.squirtle.hiremate.auth.service;
 
-import com.squirtle.hiremate.auth.util.OtpGenerator;
-import com.squirtle.hiremate.exception.BadRequestException;
+import com.squirtle.hiremate.common.email.service.EmailService;
+import com.squirtle.hiremate.common.utils.OtpGenerator;
+import com.squirtle.hiremate.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;

@@ -21,6 +21,17 @@ spring:
         chat:
           options:
             model: ${geminiModel}
+  rabbitmq:
+    host: ${rabbitMQHost}
+    port: ${rabbitMQPort}
+    username: ${rabbitMQUsername}
+    password: ${rabbitMQPassword}
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 5
+          initial-interval: 2000
 
 
 

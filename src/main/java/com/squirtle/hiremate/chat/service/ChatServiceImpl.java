@@ -1,13 +1,16 @@
 package com.squirtle.hiremate.chat.service;
 
-import com.squirtle.hiremate.auth.service.EmailService;
+import com.squirtle.hiremate.common.email.dto.EmailMessage;
+import com.squirtle.hiremate.common.email.service.EmailService;
 import com.squirtle.hiremate.chat.dto.MessageType;
 import com.squirtle.hiremate.chat.entity.*;
 import com.squirtle.hiremate.chat.repository.*;
-import com.squirtle.hiremate.config.DynamicEmailConfig;
+import com.squirtle.hiremate.common.exception.BadRequestException;
+import com.squirtle.hiremate.common.exception.ResourceNotFoundException;
+import com.squirtle.hiremate.common.exception.UnauthorizedException;
+import com.squirtle.hiremate.common.config.DynamicEmailConfig;
 import com.squirtle.hiremate.contacts.entity.Contact;
 import com.squirtle.hiremate.contacts.repository.ContactRepository;
-import com.squirtle.hiremate.exception.*;
 import com.squirtle.hiremate.user.entity.User;
 import com.squirtle.hiremate.user.repository.UserRepository;
 import com.squirtle.hiremate.user.service.UserService;
@@ -85,9 +88,12 @@ public class ChatServiceImpl implements ChatService {
                 String body = baseBody.replace("<<name>>", contact.getName());
 
                 emailService.sendReferralEmail(
-                        contact.getEmail(),
-                        subject,
-                        body
+                        EmailMessage.builder()
+                                .to(contact.getEmail())
+                                .body(body)
+                                .subject("Request For Referral")
+                                .mailSender(mailSender)
+                                .build()
                 );
             }
 

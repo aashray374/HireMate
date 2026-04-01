@@ -1,6 +1,6 @@
 package com.squirtle.hiremate.user.entity;
 
-import com.squirtle.hiremate.config.CryptoConverter;
+import com.squirtle.hiremate.common.config.CryptoConverter;
 import com.squirtle.hiremate.resume.entity.Resume;
 import jakarta.persistence.*;
 import lombok.*;

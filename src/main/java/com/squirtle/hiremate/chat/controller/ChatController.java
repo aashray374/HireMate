@@ -3,7 +3,7 @@ package com.squirtle.hiremate.chat.controller;
 import com.squirtle.hiremate.chat.dto.ChatMessageDto;
 import com.squirtle.hiremate.chat.entity.Message;
 import com.squirtle.hiremate.chat.service.ChatService;
-import com.squirtle.hiremate.exception.BadRequestException;
+import com.squirtle.hiremate.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

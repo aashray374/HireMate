@@ -2,7 +2,7 @@ package com.squirtle.hiremate.contacts.service;
 
 import com.squirtle.hiremate.contacts.entity.Contact;
 import com.squirtle.hiremate.contacts.repository.ContactRepository;
-import com.squirtle.hiremate.exception.BadRequestException;
+import com.squirtle.hiremate.common.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
